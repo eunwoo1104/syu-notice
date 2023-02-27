@@ -54,12 +54,13 @@ async def parsing_task():
 
                 # 처음 가져오는 경우는 스킵
                 if existing:
-                    filtered = [x for x in res if x["url"] not in existing]
-                    await publish_to_discord(filtered, parser_id)
+                    filtered = [x for x in res if x["url"] not in existing and x["name"]]
+                    if filtered:
+                        await publish_to_discord(filtered, parser_id)
 
                 await db.executemany(
                     f"INSERT INTO {parser_id} SELECT ?, ?, ?, ? WHERE NOT EXISTS(SELECT 1 FROM {parser_id} WHERE url=?)",
-                    ((x["url"], x["name"], x["author"], x["date"], x["url"]) for x in res))
+                    ((x["url"], x["name"], x["author"], x["date"], x["url"]) for x in res if x["name"]))
                 await db.commit()
 
         for err in errs:
