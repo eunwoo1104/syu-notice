@@ -2,6 +2,9 @@
 자동으로 삼육대 학사 및 단과별 홈페이지 공지를 크롤링하고 디스코드 웹훅으로 보냅니다.  
 나중에 다른 방식으로 확장할 수 있도록 Sanic 프레임워크 기반으로 제작했습니다.
 
+## 예시
+![image](https://user-images.githubusercontent.com/61371424/221483113-a1a4492e-307b-461f-a81a-3acbe1f429b0.png)
+
 ## 셀프 호스팅 및 테스트 방법
 1. 파이썬을 준비해주시고, `requirements.txt`를 통해 의존성을 설치합니다.
 2. `config.example.py`를 `config.py`로 복사 또는 rename하고, 안의 내용을 채워줍니다.
