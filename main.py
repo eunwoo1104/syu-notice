@@ -1,0 +1,116 @@
+from asyncio import AbstractEventLoop, sleep
+import logging
+
+from sanic import Sanic
+from sanic.request import Request
+from sanic.response import HTTPResponse, json, text
+from aiosqlite import connect, Connection, Row
+from aiohttp import ClientSession
+from discord import Webhook, Embed
+
+from config import Config
+from parsers import available_parsers, BaseParser, RequestError, URLNotProvided, Notice
+
+logger = logging.getLogger('syu')
+logging.basicConfig(level=logging.INFO)  # DEBUG/INFO/WARNING/ERROR/CRITICAL
+handler = logging.FileHandler(filename=f'syu.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
+
+app = Sanic(__name__)
+loaded_parsers: dict[str, BaseParser] = {}
+db: Connection
+parser_session: ClientSession
+webhook_session: ClientSession
+LOGO_URL = "https://eunwoo.dev/asset/로고(+한글명).png"
+
+
+async def publish_to_discord(notices: list[Notice], parser_id):
+    tgt = await db.execute_fetchall("""SELECT webhook FROM discord_sub WHERE sub LIKE ?""", (f"%{parser_id}%",))
+    for webhook_url in map(lambda x: x["webhook"], tgt):
+        webhook = Webhook.from_url(webhook_url, session=webhook_session)
+        for notice in notices:
+            embed = Embed(title=notice["name"], url=notice["url"], color=0x001f99)
+            embed.set_author(name=notice["author"])
+            embed.set_footer(text=notice["date"])
+            await webhook.send(embed=embed, username=f"삼육대학교 {loaded_parsers[parser_id].NAME}", avatar_url=LOGO_URL)
+
+
+async def parsing_task():
+    while not parser_session.closed:
+        errs = []
+        for parser_id, parser in loaded_parsers.items():
+            try:
+                res = await parser.get_notices()
+            except RequestError:
+                logger.error(f"Unable to parse from parser {parser_id}.")
+            except (URLNotProvided, Exception):
+                logger.warning(f"Invalid parser {parser_id}, removing...")
+                errs.append(parser_id)
+            else:
+                logger.info(f"Parsed from {parser_id} parser.")
+
+                existing = [x["url"] for x in await db.execute_fetchall(f"SELECT url FROM {parser_id}")]
+
+                # 처음 가져오는 경우는 스킵
+                if existing:
+                    filtered = [x for x in res if x["url"] not in existing]
+                    await publish_to_discord(filtered, parser_id)
+
+                await db.executemany(
+                    f"INSERT INTO {parser_id} SELECT ?, ?, ?, ? WHERE NOT EXISTS(SELECT 1 FROM {parser_id} WHERE url=?)",
+                    ((x["url"], x["name"], x["author"], x["date"], x["url"]) for x in res))
+                await db.commit()
+
+        for err in errs:
+            loaded_parsers.pop(err, None)
+
+        await sleep(60)  # 60초 간격
+
+
+@app.before_server_start
+async def init_all(app: Sanic, loop: AbstractEventLoop):
+    global db, parser_session, webhook_session
+
+    db = await connect("database.db")
+    db.row_factory = Row
+
+    parser_session = ClientSession()
+    webhook_session = ClientSession()
+
+    for parser_id, parser_class in available_parsers.items():
+        loaded_parsers[parser_id] = parser_class(parser_session)
+        await db.execute(f"""CREATE TABLE IF NOT EXISTS {parser_id} (
+        url TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        author TEXT NOT NULL,
+        date TEXT NOT NULL
+        )""")
+        await db.commit()
+
+    await db.execute("""CREATE TABLE IF NOT EXISTS discord_sub (
+    webhook TEXT PRIMARY KEY,
+    sub TEXT NOT NULL DEFAULT 'academic'
+    )""")
+
+    await db.commit()
+
+
+@app.after_server_start
+async def start_task(app: Sanic, loop: AbstractEventLoop):
+    app.add_task(parsing_task())
+
+
+@app.after_server_stop
+async def close_all(app: Sanic, loop: AbstractEventLoop):
+    await parser_session.close()
+    await db.close()
+
+
+@app.get("/")
+async def hello(request: Request) -> HTTPResponse:
+    return text("Hello, World!")
+
+
+if __name__ == "__main__":
+    app.run(Config.HOST, Config.PORT)
