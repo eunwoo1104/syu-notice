@@ -16,9 +16,12 @@
 
 ## 파서 지원 목록
 - [학사 공지 (academic)](https://www.syu.ac.kr/academic/academic-notice/)
-- [스미스학부대학 (teacher)](https://www.syu.ac.kr/teacher/community/notice/)
+- [인공지능융합학부 (aice)](https://www.syu.ac.kr/aice/community/notice/)
+- [건축학과 (arch)](https://www.syu.ac.kr/arch/community/notice/)
 - [컴퓨터공학부 (cse)](https://www.syu.ac.kr/cse/community/notice/)
+- [경영학과 (doba)](https://www.syu.ac.kr/doba/community/notice/)
 - [SW중심대학사업단 (swuniv)](https://www.syu.ac.kr/swuniv/community/notice/)
+- [스미스학부대학 (teacher)](https://www.syu.ac.kr/teacher/community/notice/)
 
 ## 파서 추가 방법
 1. `parsers` 디렉토리에 파이썬 파일을 하나 생성해주세요.
