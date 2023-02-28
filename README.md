@@ -15,11 +15,13 @@
 5. 이제 기다려줍니다.
 
 ## 파서 지원 목록
-- [학사 공지 (academic)](https://www.syu.ac.kr/academic/academic-notice/)
+- [학사공지 (academic)](https://www.syu.ac.kr/academic/academic-notice/)
 - [인공지능융합학부 (aice)](https://www.syu.ac.kr/aice/community/notice/)
 - [건축학과 (arch)](https://www.syu.ac.kr/arch/community/notice/)
+- [생활공지 (campus)](https://www.syu.ac.kr/university-square/notice/campus-notice/)
 - [컴퓨터공학부 (cse)](https://www.syu.ac.kr/cse/community/notice/)
 - [경영학과 (doba)](https://www.syu.ac.kr/doba/community/notice/)
+- [행사공지 (event)](https://www.syu.ac.kr/university-square/notice/event/)
 - [SW중심대학사업단 (swuniv)](https://www.syu.ac.kr/swuniv/community/notice/)
 - [스미스학부대학 (teacher)](https://www.syu.ac.kr/teacher/community/notice/)
 
