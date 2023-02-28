@@ -50,7 +50,13 @@ async def parsing_task():
             else:
                 logger.info(f"Parsed from {parser_id} parser.")
 
-                existing = [x["url"] for x in await db.execute_fetchall(f"SELECT url FROM {parser_id}")]
+                from_db = [await db.execute_fetchall(f"SELECT url FROM {pid}") for pid in loaded_parsers.keys()]
+
+                existing = set()
+
+                for db_res in from_db:
+                    for x in db_res:
+                        existing.add(x["url"])
 
                 # 처음 가져오는 경우는 스킵
                 if existing:
