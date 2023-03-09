@@ -6,6 +6,7 @@ from .arch import ArchParser
 from .campus import CampusParser
 from .cse import CSEParser
 from .doba import DOBAParser
+from .english import EnglishParser
 from .event import EventParser
 from .swuniv import SWUnivParser
 from .teacher import TeacherParser
@@ -17,6 +18,7 @@ available_parsers: dict[str, type[BaseParser]] = {
     "campus": CampusParser,
     "cse": CSEParser,
     "doba": DOBAParser,
+    "english": EnglishParser,
     "event": EventParser,
     "swuniv": SWUnivParser,
     "teacher": TeacherParser,

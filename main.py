@@ -26,14 +26,14 @@ LOGO_URL = "https://eunwoo.dev/asset/로고(+한글명).png"
 
 
 async def publish_to_discord(notices: list[Notice], parser_id):
-    tgt = await db.execute_fetchall("""SELECT webhook FROM discord_sub WHERE sub LIKE ?""", (f"%{parser_id}%",))
-    for webhook_url in map(lambda x: x["webhook"], tgt):
+    tgt = await db.execute_fetchall("""SELECT webhook, mention FROM discord_sub WHERE sub LIKE ?""", (f"%{parser_id}%",))
+    for webhook_url, mention in map(lambda x: (x["webhook"], x["mention"]), tgt):
         webhook = Webhook.from_url(webhook_url, session=webhook_session)
         for notice in notices:
             embed = Embed(title=notice["name"], url=notice["url"], color=0x001f99)
             embed.set_author(name=notice["author"])
             embed.set_footer(text=notice["date"])
-            await webhook.send(embed=embed, username=f"삼육대학교 {loaded_parsers[parser_id].NAME}", avatar_url=LOGO_URL)
+            await webhook.send(content=f"<@&{mention}>" if mention else None, embed=embed, username=f"삼육대학교 {loaded_parsers[parser_id].NAME}", avatar_url=LOGO_URL)
 
 
 async def parsing_task():
@@ -97,7 +97,8 @@ async def init_all(app: Sanic, loop: AbstractEventLoop):
 
     await db.execute("""CREATE TABLE IF NOT EXISTS discord_sub (
     webhook TEXT PRIMARY KEY,
-    sub TEXT NOT NULL DEFAULT 'academic'
+    sub TEXT NOT NULL DEFAULT 'academic',
+    mention TEXT DEFAULT NULL
     )""")
 
     await db.commit()

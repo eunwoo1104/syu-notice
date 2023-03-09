@@ -12,6 +12,7 @@
 4. 자신의 디스코드 서버의 채널 웹훅을 자동으로 생성된 `database.db`의 `discord_sub` 테이블에 넣어줍니다.
    - webhook: 웹훅 URL
    - sub: 구독할 목록; 컴마 등으로 구독할 공지를 작성해주세요. ID는 [파서 지원 목록](#파서-지원-목록)을 참고해주세요.
+   - mention: 공지를 받았을 때 맨션할 역할의 ID; 선택사항입니다.
 5. 이제 기다려줍니다.
 
 ## 파서 지원 목록
@@ -21,6 +22,7 @@
 - [생활공지 (campus)](https://www.syu.ac.kr/university-square/notice/campus-notice/)
 - [컴퓨터공학부 (cse)](https://www.syu.ac.kr/cse/community/notice/)
 - [경영학과 (doba)](https://www.syu.ac.kr/doba/community/notice/)
+- [영어영문학과 (english)](https://www.syu.ac.kr/english/community/notice/)
 - [행사공지 (event)](https://www.syu.ac.kr/university-square/notice/event/)
 - [SW중심대학사업단 (swuniv)](https://www.syu.ac.kr/swuniv/community/notice/)
 - [스미스학부대학 (teacher)](https://www.syu.ac.kr/teacher/community/notice/)
