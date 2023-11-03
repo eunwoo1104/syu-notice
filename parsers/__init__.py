@@ -1,8 +1,7 @@
-from .base import BaseParser, RequestError, URLNotProvided, Notice
-
 from .academic import AcademicParser
 from .aice import AICEParser
 from .arch import ArchParser
+from .base import BaseParser, Notice, RequestError, URLNotProvided
 from .campus import CampusParser
 from .cse import CSEParser
 from .doba import DOBAParser

@@ -1,15 +1,17 @@
 from abc import ABC
 from typing import TypedDict
-from bs4 import BeautifulSoup
 
 from aiohttp import ClientSession
+from bs4 import BeautifulSoup
 
 
 class URLNotProvided(Exception):
     """URL이 입력되지 않았습니다. 대체 뭘 파싱하라는거죠.."""
 
     def __init__(self):
-        super().__init__("Please provide URL! This is code-level error and should be fixed by parser's contributor.")
+        super().__init__(
+            "Please provide URL! This is code-level error and should be fixed by parser's contributor."
+        )
 
 
 class RequestError(Exception):
@@ -55,7 +57,14 @@ class BaseParser(ABC):
             title = notice.find("span", class_="tit")
             author = notice.find("td", class_="step3")
             date = notice.find("td", class_="step4")
-            ret.append({"name": title.string, "url": url.attrs["href"], "author": author.string, "date": date.string})
+            ret.append(
+                {
+                    "name": title.string,
+                    "url": url.attrs["href"],
+                    "author": author.string,
+                    "date": date.string,
+                }
+            )
 
         return ret
 
