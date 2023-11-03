@@ -1,12 +1,14 @@
 from asyncio import AbstractEventLoop, sleep
 import logging
+from io import StringIO
+from traceback import format_exc
 
 from sanic import Sanic
 from sanic.request import Request
-from sanic.response import HTTPResponse, json, text
+from sanic.response import HTTPResponse, text
 from aiosqlite import connect, Connection, Row
 from aiohttp import ClientSession
-from discord import Webhook, Embed
+from discord import Webhook, Embed, File
 
 from config import Config
 from parsers import available_parsers, BaseParser, RequestError, URLNotProvided, Notice
@@ -23,6 +25,7 @@ db: Connection
 parser_session: ClientSession
 webhook_session: ClientSession
 LOGO_URL = "https://eunwoo.dev/asset/로고(+한글명).png"
+error_webhook: Webhook
 
 
 async def publish_to_discord(notices: list[Notice], parser_id):
@@ -51,9 +54,14 @@ async def parsing_task():
                 res = await parser.get_notices()
             except RequestError:
                 logger.error(f"Unable to parse from parser {parser_id}.")
-            except (URLNotProvided, Exception):
+            except URLNotProvided:
                 logger.warning(f"Invalid parser {parser_id}, removing...")
                 errs.append(parser_id)
+            except Exception as ex:
+                logger.exception("Error occurred while parsing!")
+                content = format_exc()
+                traceback = File(StringIO(content), filename="traceback.py")
+                await error_webhook.send(files=[traceback])
             else:
                 logger.info(f"Parsed from {parser_id} parser.")
 
@@ -84,7 +92,7 @@ async def parsing_task():
 
 @app.before_server_start
 async def init_all(app: Sanic, loop: AbstractEventLoop):
-    global db, parser_session, webhook_session
+    global db, parser_session, webhook_session, error_webhook
 
     db = await connect("database.db")
     db.row_factory = Row
@@ -107,6 +115,8 @@ async def init_all(app: Sanic, loop: AbstractEventLoop):
     sub TEXT NOT NULL DEFAULT 'academic',
     mention TEXT DEFAULT NULL
     )""")
+
+    error_webhook = Webhook.from_url(Config.ERROR_WEBHOOK_URL, session=webhook_session)
 
     await db.commit()
 
