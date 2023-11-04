@@ -6,10 +6,10 @@
 ![image](https://user-images.githubusercontent.com/61371424/221483113-a1a4492e-307b-461f-a81a-3acbe1f429b0.png)
 
 ## 셀프 호스팅 및 테스트 방법
-1. 파이썬을 준비해주시고, `requirements.txt`를 통해 의존성을 설치합니다.
-2. `config.example.py`를 `config.py`로 복사 또는 rename하고, 안의 내용을 채워줍니다.
-3. `main.py`를 구동합니다.
-4. 자신의 디스코드 서버의 채널 웹훅을 자동으로 생성된 `database.db`의 `discord_sub` 테이블에 넣어줍니다.
+1. Docker Compose를 사용해주세요. 또는 파이썬을 준비해주시고, `requirements.txt`를 통해 의존성을 설치합니다.
+2. `config.example.py`를 `config/__init__.py`로 복사 또는 rename하고, 안의 내용을 채워줍니다.
+3. `docker compose up -d`를 실행하거나 `main.py`를 구동합니다.
+4. 자신의 디스코드 서버의 채널 웹훅을 자동으로 생성된 `data/database.db`의 `discord_sub` 테이블에 넣어줍니다.
    - webhook: 웹훅 URL
    - sub: 구독할 목록; 컴마 등으로 구독할 공지를 작성해주세요. ID는 [파서 지원 목록](#파서-지원-목록)을 참고해주세요.
    - mention: 공지를 받았을 때 맨션할 역할의 ID; 선택사항입니다.
