@@ -144,10 +144,11 @@ cython_debug/
 test.py
 
 # Config file
+config/*
 config.py
 
 # Log file
 syu.log
 
 # Database file
-database.db
+data/*

@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  notice:
+    container_name: notice
+    image: ghcr.io/eunwoo1104/syu-notice:latest
+    restart: always
+    volumes:
+      - ./config:/usr/src/app/config
+      - ./data:/usr/src/app/data

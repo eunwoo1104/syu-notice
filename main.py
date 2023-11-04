@@ -119,7 +119,7 @@ async def parsing_task():
 async def init_all(app: Sanic, loop: AbstractEventLoop):
     global db, parser_session, webhook_session, error_webhook
 
-    db = await connect("database.db")
+    db = await connect("data/database.db")
     db.row_factory = Row
 
     parser_session = ClientSession()
