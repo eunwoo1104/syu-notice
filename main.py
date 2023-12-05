@@ -26,7 +26,7 @@ loaded_parsers: dict[str, BaseParser] = {}
 db: Connection
 parser_session: ClientSession
 webhook_session: ClientSession
-LOGO_URL = "https://eunwoo.dev/asset/로고(+한글명).png"
+LOGO_URL = "https://asset.eunwoo.dev/asset/로고(+한글명).png"
 error_webhook: Webhook
 
 
