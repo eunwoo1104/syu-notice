@@ -73,10 +73,11 @@ async def parsing_task():
                 logger.warning(f"Invalid parser {parser_id}, removing...")
                 errs.append(parser_id)
             except Exception as ex:
-                logger.exception("Error occurred while parsing!")
+                error_text = f"Error occurred while parsing on {parser_id}!"
+                logger.exception(error_text)
                 content = format_exc()
                 traceback = File(StringIO(content), filename="traceback.py")
-                await error_webhook.send(files=[traceback])
+                await error_webhook.send(error_text, files=[traceback])
             else:
                 logger.info(f"Parsed from {parser_id} parser.")
 
