@@ -3,7 +3,7 @@ from asyncio import AbstractEventLoop, sleep
 from io import StringIO
 from traceback import format_exc
 
-from aiohttp import ClientSession
+from aiohttp import ClientSession, TCPConnector
 from aiosqlite import Connection, Row, connect
 from discord import Embed, File, Webhook
 from sanic import Sanic
@@ -123,8 +123,8 @@ async def init_all(app: Sanic, loop: AbstractEventLoop):
     db = await connect("data/database.db")
     db.row_factory = Row
 
-    parser_session = ClientSession()
-    webhook_session = ClientSession()
+    parser_session = ClientSession(connector=TCPConnector(verify_ssl=False))
+    webhook_session = ClientSession(connector=TCPConnector(verify_ssl=False))
 
     for parser_id, parser_class in available_parsers.items():
         loaded_parsers[parser_id] = parser_class(parser_session)
