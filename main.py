@@ -36,29 +36,33 @@ async def publish_to_discord(notices: list[Notice], parser_id):
         (f"%{parser_id}%",),
     )
     for webhook_url, mention in map(lambda x: (x["webhook"], x["mention"]), tgt):
-        webhook = Webhook.from_url(webhook_url, session=webhook_session)
-        buf = []
-        for notice in notices:
-            embed = Embed(title=notice["name"], url=notice["url"], color=0x001F99)
-            embed.set_author(name=notice["author"])
-            embed.set_footer(text=notice["date"])
-            buf.append(embed)
-            if len(buf) == 10:
+        try:
+            webhook = Webhook.from_url(webhook_url, session=webhook_session)
+            buf = []
+            for notice in notices:
+                embed = Embed(title=notice["name"], url=notice["url"], color=0x001F99)
+                embed.set_author(name=notice["author"])
+                embed.set_footer(text=notice["date"])
+                buf.append(embed)
+                if len(buf) == 10:
+                    await webhook.send(
+                        content=f"<@&{mention}>" if mention else None,
+                        embeds=buf,
+                        username=f"삼육대학교 {loaded_parsers[parser_id].NAME}",
+                        avatar_url=LOGO_URL,
+                    )
+                    buf.clear()
+
+            if buf:
                 await webhook.send(
                     content=f"<@&{mention}>" if mention else None,
                     embeds=buf,
                     username=f"삼육대학교 {loaded_parsers[parser_id].NAME}",
                     avatar_url=LOGO_URL,
                 )
-                buf.clear()
-
-        if buf:
-            await webhook.send(
-                content=f"<@&{mention}>" if mention else None,
-                embeds=buf,
-                username=f"삼육대학교 {loaded_parsers[parser_id].NAME}",
-                avatar_url=LOGO_URL,
-            )
+        except Exception as ex:
+            # TODO: better handling
+            logger.error(f"Error while sending notice: {ex}")
 
 
 async def parsing_task():
